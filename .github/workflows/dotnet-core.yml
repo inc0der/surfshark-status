@@ -14,9 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.7.2
       with:
-        dotnet-version: 4.7.100
+        dotnet-version: 4.7.x
     - name: Install dependencies
       run: dotnet restore ./src/Surfshark.sln
     - name: Build
