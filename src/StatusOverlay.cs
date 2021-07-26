@@ -61,15 +61,17 @@ namespace SurfSharkStatus
             networks = NetworkInterface.GetAllNetworkInterfaces();
             foreach (NetworkInterface adapter in networks)
             {
-                if (adapter.Name.Contains("IKEv2-Surfshark"))
+                if ((adapter.Name.Contains("Surfshark") || adapter.Description.Contains("Surfshark")) || adapter.Name.Contains("wintunshark"))
                 {
                     if (adapter.OperationalStatus.ToString() == "Up")
                     {
                         result = true;
+                        break;
                     }
                     else
                     {
                         result = false;
+                        continue;
                     }
                 }
             }
@@ -114,7 +116,8 @@ namespace SurfSharkStatus
                 if (visible)
                 {
                     Show();
-                } else
+                }
+                else
                 {
                     Hide();
                 }
@@ -142,7 +145,7 @@ namespace SurfSharkStatus
             }
             if (Properties.Settings.Default.notifyOnDisconnect)
             {
-            notifyIcon1.ShowBalloonTip(5, "Surfshark Status", "You've been diconnected from your VPN connection", ToolTipIcon.Warning);
+                notifyIcon1.ShowBalloonTip(5, "Surfshark Status", "You've been diconnected from your VPN connection", ToolTipIcon.Warning);
             }
             WriteStatus("Disconnected");
             ChangeLabelColor(Color.Red);
@@ -179,11 +182,15 @@ namespace SurfSharkStatus
         {
             if (this.options.Visible == false)
             {
-            var settings = SurfSharkStatus.Properties.Settings.Default;
-            this.Opacity = settings.transparency;
-            if (settings.displayOnDisconnect && CheckSurfsharkStatus())
+                var settings = SurfSharkStatus.Properties.Settings.Default;
+                this.Opacity = settings.transparency;
+                if (settings.displayOnDisconnect && CheckSurfsharkStatus())
                 {
                     Hide();
+                }
+                else if (!settings.displayOnDisconnect && CheckSurfsharkStatus())
+                {
+                    Show();
                 }
             }
         }
