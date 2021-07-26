@@ -15,6 +15,7 @@ namespace SurfSharkStatus
         private delegate void SafeChangeVisibility(Boolean visibility);
         private static Array networks;
         private Boolean currentStatus = false;
+        private String currentAdapter;
 
         public StatusOverlay()
         {
@@ -67,10 +68,11 @@ namespace SurfSharkStatus
                 {
                     if (adapter.OperationalStatus.ToString() == "Up")
                     {
+                        currentAdapter = adapter.Name;
                         result = true;
                         break;
                     }
-                    else
+                    else if (currentAdapter == adapter.Name && adapter.OperationalStatus.ToString() == "Down")
                     {
                         result = false;
                         continue;
