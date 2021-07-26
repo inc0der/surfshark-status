@@ -14,6 +14,8 @@ namespace SurfSharkStatus
         private delegate void SafeChangeColorDelegate(Color color);
         private delegate void SafeChangeVisibility(Boolean visibility);
         private static Array networks;
+        private Boolean currentStatus = false;
+
         public StatusOverlay()
         {
             SetTransparency();
@@ -125,13 +127,15 @@ namespace SurfSharkStatus
         }
         private void UpdateStatus(object sender, EventArgs e)
         {
-            if (CheckSurfsharkStatus() == true)
+            var isConnected = CheckSurfsharkStatus();
+            if (isConnected && !currentStatus)
             {
+                currentStatus = true;
                 if (Properties.Settings.Default.displayOnDisconnect)
                 {
                     ChangeVisibility(false);
                 }
-                if (Properties.Settings.Default.notifyOnConnect)
+                if (Properties.Settings.Default.notifyOnConnect && isConnected)
                 {
                     notifyIcon1.ShowBalloonTip(5, "Surfshark Status", "You're connected to your VPN", ToolTipIcon.Info);
                 }
@@ -139,16 +143,21 @@ namespace SurfSharkStatus
                 ChangeLabelColor(Color.Green);
                 return;
             }
+
+            if (!isConnected && currentStatus)
+            {
+                currentStatus = false;
             if (!Visible && Properties.Settings.Default.displayOnDisconnect == true)
             {
                 ChangeVisibility(true);
             }
-            if (Properties.Settings.Default.notifyOnDisconnect)
+            if (Properties.Settings.Default.notifyOnDisconnect && !isConnected)
             {
                 notifyIcon1.ShowBalloonTip(5, "Surfshark Status", "You've been diconnected from your VPN connection", ToolTipIcon.Warning);
             }
             WriteStatus("Disconnected");
             ChangeLabelColor(Color.Red);
+            }
         }
 
         private void OpenSurfsharkToolStripMenuItem_Click(object sender, EventArgs e)
